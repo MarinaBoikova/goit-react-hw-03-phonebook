@@ -2,12 +2,29 @@ import { Component } from 'react';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
+import * as storage from './services/localStorage';
+
+const STORAGE_KEY = 'contacts';
 
 class App extends Component {
   state = {
     contacts: [],
     filter: '',
   };
+
+  componentDidMount() {
+    const savedContacts = storage.get(STORAGE_KEY);
+    if (savedContacts) {
+      this.setState({ contacts: savedContacts });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { contacts } = this.state;
+    if (prevState.contacts !== contacts) {
+      storage.save(STORAGE_KEY, contacts);
+    }
+  }
 
   onSubmit = newContact => {
     const { id, name, number } = newContact;
